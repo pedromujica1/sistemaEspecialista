@@ -1,17 +1,17 @@
-"""
-Dados de entrada: parâmetros de negócio, modelo de Pedido e carga de fatos.
-"""
+#Alunos: Pedro Miotto Mujica, Vinicius Castaman Giongo, Gabriel Costa, Pedro Moraes
+#Dados de entrada: parâmetros de negócio, modelo de Pedido e carga de fatos.
+
 from dataclasses import dataclass, field
 from base_conhecimento.variaveis_e_predicados import *
 
 #Parametros do Negocio
-MARGEM_MINIMA = 0.15           # 15 % sobre o preço
-FOLGA_MINIMA_DIAS = 1          # prazo "apertado" se sobrar <= 1 dia
-QTD_PEQUENA = 50               # unidades
-DIST_LONGA_KM = 400            # km
-LIMITE_VARIACAO = 0.10         # X% de alta em combustível/frete
-CUSTO_KM_PROPRIO = 3.20        # R$/km (frota própria)
-VELOCIDADE_MEDIA_KM_DIA = 500  # km/dia (frota própria)
+MARGEM_MINIMA = 0.15 #15 % sobre o preço
+FOLGA_MINIMA_DIAS = 1 #prazo "apertado" se sobrar <= 1 dia
+QTD_PEQUENA = 50 #unidades
+DIST_LONGA_KM = 400 #km
+LIMITE_VARIACAO = 0.10 # X% de alta em combustível/frete
+CUSTO_KM_PROPRIO = 3.20 #R$/km (frota própria)
+VELOCIDADE_MEDIA_KM_DIA = 500 #km/dia (frota própria)
 
 
 @dataclass

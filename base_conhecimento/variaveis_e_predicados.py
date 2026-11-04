@@ -1,3 +1,4 @@
+#Alunos: Pedro Miotto Mujica, Vinicius Castaman Giongo, Gabriel Costa, Pedro Moraes
 """
 Vocabulário lógico do sistema: variáveis, fatos e regras (predicados).
 Todos os módulos de regras fazem:  from ...variaveis_e_predicados import *
