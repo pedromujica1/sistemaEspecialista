@@ -1,0 +1,13 @@
+Decidir como enviar um pedido, por frota própria ou transportadora terceira, sem perder a margem mínima planejada.
+
+Problema: Dado um pedido (produtos, quantidade, destino, prazo prometido, prioridade do cliente), o sistema recomenda a melhor forma de entrega e avisa quando a margem de lucro fica abaixo do mínimo.
+
+SE custo de transporte próprio + custo do produto > preço × (1 − margem mínima) ENTÃO rota inviável com meios próprios.
+SE rota é inviável E existe transportadora parceira que cabe no prazo ENTÃO recomendar terceirizar.
+SE prazo de deslocamento > prazo prometido ao cliente ENTÃO avaliar entrega expressa ou terceirizada.
+SE prioridade do cliente é alta E prazo é apertado ENTÃO priorizar velocidade, aceitando margem menor, mas sempre ≥ mínima.
+SE a quantidade for pequena E a distância grande ENTÃO sugerir consolidar a carga com outros pedidos.
+SE o custo de combustível ou frete subiu acima de X% ENTÃO reavaliar as rotas (reflete o “estar atento ao mercado e à economia”).
+SE (Tem obra na pista), Então (Quanto tempo de atraso acarreta)
+
+Aí compara com outra rota
