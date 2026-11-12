@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Decisão de Envio</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+<header class="border-b border-slate-200 bg-white">
+  <div class="mx-auto max-w-6xl px-4 py-4">
+    <h1 class="text-lg font-semibold">Sistema Especialista: Decisão de Envio</h1>
+    <p class="text-sm text-slate-500">Frota própria ou terceirizada, respeitando margem e prazo.</p>
+  </div>
+</header>
+
+<main class="mx-auto grid max-w-6xl gap-6 px-4 py-6 lg:grid-cols-2">
+
+  <form id="form-pedido" class="space-y-6 rounded-md border border-slate-200 bg-white p-5">
+    <div class="flex flex-wrap items-center justify-between gap-2">
+      <h2 class="font-semibold">Pedido</h2>
+      <label class="text-sm text-slate-600">
+        Carregar exemplo
+        <select id="exemplo" class="ml-1 rounded border border-slate-300 px-2 py-1 text-sm">
+          <option value="">—</option>
+          <option value="P1">P1: terceira mais barata</option>
+          <option value="P2">P2: margem estourada</option>
+          <option value="P3">P3: obra na pista</option>
+        </select>
+      </label>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4">
+      <label class="campo">Preço de venda (R$)
+        <input name="preco" type="number" min="0.01" step="0.01" required>
+      </label>
+      <label class="campo">Custo dos produtos (R$)
+        <input name="custo_produto" type="number" min="0" step="0.01" required>
+      </label>
+      <label class="campo">Quantidade
+        <input name="quantidade" type="number" min="0" step="1" required>
+      </label>
+      <label class="campo">Distância (km)
+        <input name="distancia_km" type="number" min="0" step="0.1" required>
+      </label>
+      <label class="campo">Prazo prometido (dias)
+        <input name="prazo_dias" type="number" min="0" step="1" required>
+      </label>
+      <label class="campo">Prioridade do cliente
+        <select name="prioridade">
+          <option value="baixa">Baixa</option>
+          <option value="media" selected>Média</option>
+          <option value="alta">Alta</option>
+        </select>
+      </label>
+    </div>
+
+    <fieldset class="border-t border-slate-200 pt-4">
+      <legend class="pr-2 text-sm font-semibold">Obra na pista</legend>
+      <div class="grid grid-cols-2 gap-4">
+        <label class="campo">Atraso (dias, 0 = sem obra)
+          <input name="atraso_obra_dias" type="number" min="0" step="1" value="0">
+        </label>
+        <label class="campo">Rota alternativa (km, 0 = não há)
+          <input name="distancia_alt_km" type="number" min="0" step="0.1" value="0">
+        </label>
+      </div>
+    </fieldset>
+
+    <fieldset class="border-t border-slate-200 pt-4">
+      <legend class="pr-2 text-sm font-semibold">Transportadoras parceiras</legend>
+      <div id="transportadoras" class="space-y-2"></div>
+      <button type="button" id="adicionar-transportadora"
+              class="mt-2 text-sm font-medium text-blue-700 hover:underline">
+        + Adicionar transportadora
+      </button>
+    </fieldset>
+
+    <fieldset class="border-t border-slate-200 pt-4">
+      <legend class="pr-2 text-sm font-semibold">Mercado</legend>
+      <label class="campo w-1/2 pr-2">Alta de combustível/frete (%)
+        <input name="variacao_mercado" type="number" min="0" step="0.1" value="0">
+      </label>
+    </fieldset>
+
+    <div class="flex justify-end border-t border-slate-200 pt-4">
+      <button type="submit" class="rounded-md bg-blue-700 px-4 py-2 text-sm font-medium text-white hover:bg-blue-800">
+        Avaliar pedido
+      </button>
+    </div>
+  </form>
+
+  <section class="space-y-6">
+    <div id="resultado" class="rounded-md border border-slate-200 bg-white p-5">
+      <h2 class="font-semibold">Recomendação</h2>
+      <p class="mt-2 text-sm text-slate-500">Preencha o pedido e clique em "Avaliar pedido".</p>
+    </div>
+
+    <div class="rounded-md border border-slate-200 bg-white p-5">
+      <h2 class="font-semibold">Parâmetros do sistema</h2>
+      <dl class="mt-3 grid gap-x-6 gap-y-2 text-sm sm:grid-cols-2">
+        {% for rotulo, valor in parametros %}
+        <div class="flex justify-between gap-2 border-b border-slate-100 pb-1">
+          <dt class="text-slate-500">{{ rotulo }}</dt>
+          <dd class="font-medium">{{ valor }}</dd>
+        </div>
+        {% endfor %}
+      </dl>
+    </div>
+  </section>
+</main>
+
+<template id="linha-transportadora">
+  <div class="transportadora grid grid-cols-[1fr_1fr_auto] items-center gap-2 sm:grid-cols-[1fr_7rem_5rem_auto]">
+    <input data-campo="nome" placeholder="Nome" required class="col-span-3 sm:col-span-1">
+    <input data-campo="frete" type="number" min="0" step="0.01" placeholder="Frete R$" required>
+    <input data-campo="prazo" type="number" min="0" step="1" placeholder="Dias" required>
+    <button type="button" class="remover text-sm text-slate-500 hover:text-red-700">Remover</button>
+  </div>
+</template>
+
+<style type="text/tailwindcss">
+  .campo { @apply flex flex-col gap-1 text-sm text-slate-600; }
+  input, select { @apply min-w-0 rounded border border-slate-300 px-2 py-1.5 text-slate-800 focus:border-blue-600 focus:outline-none; }
+</style>
+
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

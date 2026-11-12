@@ -67,16 +67,16 @@ def decidir(p: Pedido, custo_prop, prazo_prop, custo_alt, prazo_alt):
         log.append("R5: quantidade pequena + distância grande -> " "consolidar carga com outros pedidos.")
 
     if not opcoes:
-        return None, log
-    
+        return None, opcoes, log
+
     if vale(f"priorizar_velocidade('{pid}')"):
-        return min(opcoes, key=lambda o: (o[2], o[1])), log
-    return min(opcoes, key=lambda o: o[1]), log
+        return min(opcoes, key=lambda o: (o[2], o[1])), opcoes, log
+    return min(opcoes, key=lambda o: o[1]), opcoes, log
 
 #funçao de processamento de pedidos
 def processar(p: Pedido):
     cp, dp, ca, da = carregar_pedido(p)
-    escolha, log = decidir(p, cp, dp, ca, da)
+    escolha, _, log = decidir(p, cp, dp, ca, da)
     print(f"\n=== Pedido {p.id} (prioridade {p.prioridade}) ===")
     for linha in log:
         print("  -", linha)

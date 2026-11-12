@@ -45,7 +45,14 @@ pip install -r requirements.txt
 
 Para iniciar o sistema especialista:
 
-* **Menu Interativo (modo completo):**
+* **Interface Web:**
+```bash
+python app.py
+
+```
+Depois é só abrir http://localhost:5000 no navegador. O seletor "Carregar exemplo" preenche o formulário com os mesmos pedidos do modo demonstração.
+
+* **Menu Interativo (terminal):**
 ```bash
 python main.py
 

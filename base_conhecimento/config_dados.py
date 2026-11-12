@@ -37,9 +37,28 @@ def carregar_parametros(variacao_mercado_atual: float = 0.0):
     + variacao_mercado(variacao_mercado_atual) #type: ignore
 
 
-def carregar_pedido(p: Pedido):
+def trocar_variacao_mercado(nova: float):
+    atual = pyDatalog.ask("variacao_mercado(X)")
+    if atual:
+        for (valor,) in atual.answers:
+            - variacao_mercado(valor) #type: ignore
+    + variacao_mercado(nova) #type: ignore
+
+
+def calcular_rotas(p: Pedido):
     custo_prop = p.distancia_km * CUSTO_KM_PROPRIO
     prazo_prop = int(-(-p.distancia_km // VELOCIDADE_MEDIA_KM_DIA))  #type: ignore
+    # Rota alternativa; sem alternativa => valores proibitivos (nunca é escolhida)
+    if p.distancia_alt_km > 0:
+        custo_alt = p.distancia_alt_km * CUSTO_KM_PROPRIO
+        prazo_alt = int(-(-p.distancia_alt_km // VELOCIDADE_MEDIA_KM_DIA))
+    else:
+        custo_alt, prazo_alt = 1e12, 10**6
+    return custo_prop, prazo_prop, custo_alt, prazo_alt
+
+
+def carregar_pedido(p: Pedido):
+    custo_prop, prazo_prop, custo_alt, prazo_alt = calcular_rotas(p)
     + pedido(p.id) #type: ignore
     + preco(p.id, p.preco) #type: ignore
     + custo_produto(p.id, p.custo_produto) #type: ignore
@@ -54,14 +73,27 @@ def carregar_pedido(p: Pedido):
         + prazo_terc(p.id, nome, prazo) #type: ignore
     # Obra na pista (R7): atraso sempre registrado (0 = sem obra)
     + atraso_obra(p.id, p.atraso_obra_dias) #type: ignore
-    prazo_efetivo_ = prazo_prop + p.atraso_obra_dias
-
-    # Rota alternativa; sem alternativa => valores proibitivos (nunca é escolhida)
-    if p.distancia_alt_km > 0:
-        custo_alt = p.distancia_alt_km * CUSTO_KM_PROPRIO
-        prazo_alt = int(-(-p.distancia_alt_km // VELOCIDADE_MEDIA_KM_DIA))
-    else:
-        custo_alt, prazo_alt = 1e12, 10**6
     + custo_rota_alt(p.id, custo_alt) # type: ignore
     + prazo_rota_alt(p.id, prazo_alt) #type: ignore
-    return custo_prop, prazo_efetivo_, custo_alt, prazo_alt
+    return custo_prop, prazo_prop + p.atraso_obra_dias, custo_alt, prazo_alt
+
+
+# Remove os fatos do pedido; sem isso eles ficam na base e se misturam
+# com o próximo pedido que usar o mesmo id (usado pela interface web)
+def descarregar_pedido(p: Pedido):
+    custo_prop, prazo_prop, custo_alt, prazo_alt = calcular_rotas(p)
+    - pedido(p.id) #type: ignore
+    - preco(p.id, p.preco) #type: ignore
+    - custo_produto(p.id, p.custo_produto) #type: ignore
+    - custo_proprio(p.id, custo_prop) #type: ignore
+    - prazo_proprio(p.id, prazo_prop) #type: ignore
+    - prazo_prometido(p.id, p.prazo_dias) #type: ignore
+    - prioridade(p.id, p.prioridade) #type: ignore
+    - quantidade(p.id, p.quantidade) #type: ignore
+    - distancia(p.id, p.distancia_km) #type: ignore
+    for nome, (frete, prazo) in p.transportadoras.items():
+        - custo_terc(p.id, nome, frete) #type: ignore
+        - prazo_terc(p.id, nome, prazo) #type: ignore
+    - atraso_obra(p.id, p.atraso_obra_dias) #type: ignore
+    - custo_rota_alt(p.id, custo_alt) # type: ignore
+    - prazo_rota_alt(p.id, prazo_alt) #type: ignore
